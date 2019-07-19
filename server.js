@@ -67,10 +67,22 @@ function sumQuery() {
     .catch(err => console.log(err));
 }
 /*
-    3. Courses with level “excellent” with 
+    3. Courses with level "Excelent" with 
        university location, country and city {nameCourse : “x”, country:”y”,etc… }
 */
-function filterQuery() {}
+function filterQuery() {
+  return Courses.find({ level: 'Excelent' })
+    .populate('info', { students: 0 })
+    .then(docs =>
+      docs.forEach(doc => {
+        console.log('Courses with level "Excelent":', doc.name);
+        doc.info.forEach(university =>
+          console.log('At university:', university.name, '\nINFO:', university)
+        );
+      })
+    )
+    .catch(err => console.log(err));
+}
 /*
     4. Average students per year for all universities
 */

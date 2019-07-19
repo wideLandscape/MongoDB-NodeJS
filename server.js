@@ -32,7 +32,11 @@ function groupQuery() {
   return Courses.aggregate([
     [{ $group: { _id: '$level', number: { $sum: 1 } } }]
   ])
-    .then(docs => docs.forEach(doc => console.log(doc)))
+    .then(docs =>
+      docs.forEach(doc =>
+        console.log('Course level: ' + doc._id, '-> Q.ty: ' + doc.number)
+      )
+    )
     .catch(err => console.log(err));
 }
 /*
@@ -50,7 +54,16 @@ function sumQuery() {
       { $group: { _id: '$name', number: { $sum: '$students.number' } } }
     ]
   ])
-    .then(docs => docs.forEach(doc => console.log(doc)))
+    .then(docs =>
+      docs.forEach(doc =>
+        console.log(
+          'Number of students per university of ' +
+            doc._id +
+            ' in the period 2014 - 2015:',
+          doc.number
+        )
+      )
+    )
     .catch(err => console.log(err));
 }
 /*
@@ -61,7 +74,23 @@ function filterQuery() {}
 /*
     4. Average students per year for all universities
 */
-function averageQuery() {}
+function averageQuery() {
+  return Universities.aggregate([
+    [
+      { $unwind: '$students' },
+      { $group: { _id: null, number: { $avg: '$students.number' } } }
+    ]
+  ])
+    .then(docs =>
+      docs.forEach(doc =>
+        console.log(
+          'Average students per year for all universities:',
+          doc.number
+        )
+      )
+    )
+    .catch(err => console.log(err));
+}
 /*
     5. Universities with the following constraints: 
     •  -5.65 < x < -5.69, 
@@ -82,6 +111,11 @@ function geoSpatialQuery() {
       }
     }
   })
-    .then(docs => docs.forEach(doc => console.log(doc.name)))
+    .then(docs => {
+      console.log('Universities within the geospatial constraints:');
+      docs.forEach(doc => {
+        console.log(doc.name);
+      });
+    })
     .catch(err => console.log(err));
 }

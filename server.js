@@ -38,7 +38,21 @@ function groupQuery() {
 /*
     2. Number of students per university in the period 2014 - 2015 {“nameUniversity” : “number”}
 */
-function sumQuery() {}
+function sumQuery() {
+  return Universities.aggregate([
+    [
+      { $unwind: '$students' },
+      {
+        $match: {
+          'students.year': { $gte: 2014, $lte: 2015 }
+        }
+      },
+      { $group: { _id: '$name', number: { $sum: '$students.number' } } }
+    ]
+  ])
+    .then(docs => docs.forEach(doc => console.log(doc)))
+    .catch(err => console.log(err));
+}
 /*
     3. Courses with level “excellent” with 
        university location, country and city {nameCourse : “x”, country:”y”,etc… }

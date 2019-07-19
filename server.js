@@ -12,13 +12,14 @@ mongoose
     useFindAndModify: false
   })
   .then(
-    () => {
+    async () => {
       console.log('Database is connected');
       groupQuery();
       sumQuery();
       filterQuery();
       averageQuery();
-      geoSpatialQuery();
+      await geoSpatialQuery();
+      console.log('end');
     },
     err => {
       console.log('Can not connect to the database' + err);
@@ -27,7 +28,13 @@ mongoose
 /*
     1. Number of courses categorized by “level” i.e. {level :”X”, “number” : Y}
 */
-function groupQuery() {}
+function groupQuery() {
+  return Courses.aggregate([
+    [{ $group: { _id: '$level', number: { $sum: 1 } } }]
+  ])
+    .then(docs => docs.forEach(doc => console.log(doc)))
+    .catch(err => console.log(err));
+}
 /*
     2. Number of students per university in the period 2014 - 2015 {“nameUniversity” : “number”}
 */

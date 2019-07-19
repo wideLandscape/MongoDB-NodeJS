@@ -46,4 +46,21 @@ function averageQuery() {}
     •  -5.65 < x < -5.69, 
     • -15 < y <=17,
 */
-function geoSpatialQuery() {}
+function geoSpatialQuery() {
+  const polygon = {
+    type: 'Polygon',
+    coordinates: [
+      [[-5.65, -15], [-5.69, -15], [-5.69, 17], [-5.65, 17], [-5.65, -15]]
+    ]
+  };
+
+  return Universities.find({
+    location: {
+      $geoWithin: {
+        $geometry: polygon
+      }
+    }
+  })
+    .then(docs => docs.forEach(doc => console.log(doc.name)))
+    .catch(err => console.log(err));
+}
